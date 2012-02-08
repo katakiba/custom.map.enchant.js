@@ -1,5 +1,7 @@
 enchant();
 var CHIP_SIZE = 16;
+var MAP_WIDTH = 10;
+var MAP_HEIGHT = 10;
 
 var mapElement = [
   [322, 322, 322, 322, 322, 205, 205, 205, 205, 205],
@@ -27,20 +29,41 @@ var moveCostMap = [
   [  1,   1,   1,   1,   1,   1,   1,   1,   1,   1]
 ];
 
+var gridmap = function() {
+  var result = new Array(MAP_HEIGHT);
+  for (var i = 0; i < MAP_HEIGHT; i++) {
+    result[i] = new Array(MAP_WIDTH);
+    for (var j = 0; j < MAP_WIDTH; j++) {
+      result[i][j] = 0;
+    }
+  }
+  return result;
+};
+
 window.onload = function() {
   var game = new Game(240, 240);
   game.fps = 15;
-  game.preload('map1.gif', 'chara0.gif');
+  game.preload('map1.gif', 'unit.png', 'grid.png');
   game.onload = function() {
-    var map = new Map(16, 16);
+    var hex = new Hex(moveCostMap);
+
+    var map = new Map(CHIP_SIZE, CHIP_SIZE);
     map.image = game.assets['map1.gif'];
     map.loadData(mapElement);
 
-    var unit = new Unit(3, 4);
-    unit.drawUnit();
+    var grid = new Map(CHIP_SIZE, CHIP_SIZE);
+    grid.image = game.assets['grid.png'];
+    grid.loadData(gridmap());
+
+    var unit = new Unit(2, 4);
+    unit.image = game.assets['unit.png'];
+    unit.addEventListener('touchend', function(){
+      hex.drawMovableArea(unit.position(), unit.movePower);
+    });
 
     var stage = new Group();
     stage.addChild(map);
+    stage.addChild(grid);
     stage.addChild(unit);
     game.rootScene.addChild(stage);
   };
@@ -50,49 +73,34 @@ window.onload = function() {
 var Unit = enchant.Class.create(enchant.Sprite, {
   initialize: function(px, py) {
     Sprite.call(this, CHIP_SIZE, CHIP_SIZE);
-    this._unitX = px;
-    this._unitY = py;
+    this._unitPos = {x:px, y:py}
     this.x = px * CHIP_SIZE;
-    this.y = py * CHIP_SIZE + this.offsetY;
+    this.y = py * CHIP_SIZE + this.calcOffset(); 
     this.movePower = 6;
-  },
-  drawUnit: function() {
-    var unitImage = new Surface(CHIP_SIZE, CHIP_SIZE);
-    unitImage.context.beginPath();
-    unitImage.context.fillStyle = 'rgb(255,192,192)';
-    unitImage.context.arc(
-      this.x + CHIP_SIZE / 2, 
-      this.y + CHIP_SIZE / 2 + this.offsetY, 
-      CHIP_SIZE / 3,
-      0,
-      Math.PI * 2, 
-      false
-    );
-    unitImage.context.closePath();
-    unitImage.context.fill();
-    this._image = unitImage;
   },
   unitX: {
     get: function() {
-      return this._unitX;
+      return this._unitPos.x;
     },
     set: function(unitX) {
-      this._unitX = unitX;
       this.x = unitX * CHIP_SIZE;
+      this._unitPos.x = unitX;
     }
   },
   unitY: {
     get: function() {
-      return this.unitY;
+      return this._unitPos.y;
     },
     set: function(unitY) {
-      this._unitY = unitY;
-      this.y = unitY * CHIP_SIZE + this.offsetY;
+      this.y = unitY * CHIP_SIZE + this.calcOffset();
+      this._unitPos.y = unitY;
     }
   },
-  offsetY: {
-    get: function() {
-      return CHIP_SIZE / 2 * (this._unitX % 2);
-    }
+  position: function() {
+    return this._unitPos;
+  },
+  calcOffset: function() {
+      return CHIP_SIZE / 2 * (this._unitPos.x % 2);
   }
 });
+
