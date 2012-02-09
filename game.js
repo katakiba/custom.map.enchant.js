@@ -66,7 +66,18 @@ window.onload = function() {
       stage.addChild(hex.movableArea);
     });
     
-    game.rootScene.addChild(stage);
+    map.addEventListener('touchend', function(e) {
+      var _x = Math.floor(e.pageX / CHIP_SIZE);
+      var offsetY = (x % 2) * CHIP_SIZE / 2;
+      var _y = Math.floor((e.pageY - offsetY) / CHIP_SIZE);
+      var pos = {x: _x, y: _y};
+      var cost = hex.accessCost[pos.y][pos.x];
+      if(cost < 0) {
+        stage.removeChild(hex.movableArea);
+      } else {
+        
+      }
+    })
   };
   game.start();
 };
