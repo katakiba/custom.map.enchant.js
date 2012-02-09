@@ -1,23 +1,28 @@
-enchant.hex = enchant.Class.create({
-  initialize: function(costMap) {
+enchant.Hex = enchant.Class.create({
+  initialize: function(costMap, x, y) {
+    this.gameWidth = x;
+    this.gameHeight = y;
+    this.movableArea = new Sprite(x, y);
     this._costMap = costMap;
     this._cost = this._initCost();
   },
   drawMovableArea: function(unitPosition, movingPower) {
     this.accessCost(unitPosition, movingPower);
-    var movableArea = new Surface();
-    movableArea.context.beginPath();
-    movableArea.context.strokeStyle = 'rgb(255, 200, 0)';
+    var canvas = new Surface(this.gameWidth, this.gameHeight);
+    canvas.context.beginPath();
+    canvas.context.strokeStyle = 'rgb(255, 200, 0)';
     for (var x = 0; x < MAP_WIDTH; x++) {
       var offsetY = CHIP_SIZE / 2 * (x % 2);
       for (var y = 0; y < MAP_HEIGHT; y++) {
         if(this._cost[y][x] >= 0) {
-          movableArea.context.rect(x * CHIP_SIZE, y * CHIP_SIZE + offsetY, CHIP_SIZE, CHIP_SIZE);
+          canvas.context.rect(x * CHIP_SIZE, y * CHIP_SIZE + offsetY, CHIP_SIZE, CHIP_SIZE);
         }
       }
     }
-    movableArea.context.closePath();
-    movableArea.context.stroke();
+    canvas.context.closePath();
+    canvas.context.stroke();
+    
+    this.movableArea.image = canvas;
   },
   accessCost: function(unitPosition, movingPower) {
     this._initCost();

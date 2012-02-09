@@ -45,26 +45,27 @@ window.onload = function() {
   game.fps = 15;
   game.preload('map1.gif', 'unit.png', 'grid.png');
   game.onload = function() {
-    var hex = new Hex(moveCostMap);
+    var hex = new Hex(moveCostMap, 240, 240);
+    var stage = new Group();
 
     var map = new Map(CHIP_SIZE, CHIP_SIZE);
     map.image = game.assets['map1.gif'];
     map.loadData(mapElement);
+    stage.addChild(map);
 
     var grid = new Map(CHIP_SIZE, CHIP_SIZE);
     grid.image = game.assets['grid.png'];
     grid.loadData(gridmap());
-
-    var unit = new Unit(2, 4);
-    unit.image = game.assets['unit.png'];
-    unit.addEventListener('touchend', function(){
-      hex.drawMovableArea(unit.position(), unit.movePower);
-    });
-
-    var stage = new Group();
-    stage.addChild(map);
     stage.addChild(grid);
+
+    var unit = new Unit(2, 3);
+    unit.image = game.assets['unit.png'];
     stage.addChild(unit);
+    unit.addEventListener('touchend', function() {
+      hex.drawMovableArea(unit.getPosition(), unit.movePower);
+      stage.addChild(hex.movableArea);
+    });
+    
     game.rootScene.addChild(stage);
   };
   game.start();
@@ -96,7 +97,7 @@ var Unit = enchant.Class.create(enchant.Sprite, {
       this._unitPos.y = unitY;
     }
   },
-  position: function() {
+  getPosition: function() {
     return this._unitPos;
   },
   calcOffset: function() {
