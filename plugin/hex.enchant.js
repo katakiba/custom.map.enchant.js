@@ -40,20 +40,19 @@ enchant.Hex = enchant.Class.create({
     return __cost;
   },
   _access: function(chip, rest) {
-    this._cost[chip.y][chip.x] = rest;
+    if (this._cost[chip.y][chip.x] < rest) {
+      this._cost[chip.y][chip.x] = rest;
+    }
     if (rest <= 0) { return; }
     var around = this._aroundOf(chip);
-    for (var i = 0; i < around.length; ++i) {
+    for (var i = 0; i < around.length; i++) {
       var a = around[i];
-      var c = this._costOf(this._costMap[a.y][a.x]);
+      var c = this._costMap[a.y][a.x];
       var nextRest = rest - c;
-      if (!this._cost[a.y][a.x] || this._cost[a.y][a.x] < nextRest) {
+//    if (!this._cost[a.y][a.x] || this._cost[a.y][a.x] < nextRest) {
         this._access(a, nextRest);
-      }
+//    }
     }
-  },
-  _costOf: function(valueOfCostMap) {
-    return valueOfCostMap + 1;
   },
   _aroundOf: function(unitPos) {
     var result = [];

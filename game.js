@@ -88,7 +88,7 @@ var Unit = enchant.Class.create(enchant.Sprite, {
     this._unitPos = {x:px, y:py}
     this.x = px * CHIP_SIZE;
     this.y = py * CHIP_SIZE + this.calcOffset(); 
-    this.movePower = 6;
+    this.movePower = 4;
   },
   unitX: {
     get: function() {
