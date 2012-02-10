@@ -46,9 +46,9 @@ enchant.Hex = enchant.Class.create({
     if (rest <= 0) { return; }
     var around = this._aroundOf(chip);
     for (var i = 0; i < around.length; i++) {
-      var a = around[i];
-      var c = this._costMap[a.y][a.x];
-      var nextRest = rest - c;
+      var a = around[i]; //調査する座標
+      var c = this._costMap[a.y][a.x]; //ある座標の移動コスト
+      var nextRest = rest - c; //基準点から調査座標で移動したときの、残移動力
 //    if (!this._cost[a.y][a.x] || this._cost[a.y][a.x] < nextRest) {
         this._access(a, nextRest);
 //    }
@@ -64,8 +64,8 @@ enchant.Hex = enchant.Class.create({
     if (x < MAP_WIDTH - 1 ) result.push({x:x + 1, y:y});
     if (y < MAP_HEIGHT - 1) result.push({x:x, y:y + 1});
     if (x % 2 === 0) {
-    if (x > 0 && y > 0) result.push({x:x - 1, y:y - 1});
-      if (x < MAP_WIDTH - 1 && y > 0) result.push({x:x + 1, y:y + 1});
+      if (x > 0 && y > 0) result.push({x:x - 1, y:y - 1});
+      if (x < MAP_WIDTH - 1 && y > 0) result.push({x:x + 1, y:y - 1});
     } else {
       if (x > 0 && y < MAP_HEIGHT - 1) result.push({x:x - 1, y:y + 1});
       if (x > MAP_WIDTH -1 && y < MAP_HEIGHT -1) result.push({x:x + 1, y:y + 1});
