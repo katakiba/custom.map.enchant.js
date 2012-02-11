@@ -40,35 +40,32 @@ enchant.Hex = enchant.Class.create({
     return __cost;
   },
   _access: function(chip, rest) {
-    if (this._cost[chip.y][chip.x] < rest) {
-      this._cost[chip.y][chip.x] = rest;
-    }
+    this._cost[chip.y][chip.x] = rest;
     if (rest <= 0) { return; }
     var around = this._aroundOf(chip);
     for (var i = 0; i < around.length; i++) {
-      var a = around[i]; //調査する座標
-      var c = this._costMap[a.y][a.x]; //ある座標の移動コスト
-      var nextRest = rest - c; //基準点から調査座標で移動したときの、残移動力
-//    if (!this._cost[a.y][a.x] || this._cost[a.y][a.x] < nextRest) {
+      var a = around[i];
+      var nextRest = rest - a.cost;
+      if (nextRest >=0 && this._cost[a.y][a.x] < nextRest) {
         this._access(a, nextRest);
-//    }
+      }
     }
   },
   _aroundOf: function(unitPos) {
     var result = [];
     var x = unitPos.x;
     var y = unitPos.y;
-    
-    if (x > 0) result.push({x:x - 1, y:y});
-    if (y > 0) result.push({x:x, y:y - 1});
-    if (x < MAP_WIDTH - 1 ) result.push({x:x + 1, y:y});
-    if (y < MAP_HEIGHT - 1) result.push({x:x, y:y + 1});
+
+    if (x > 0) result.push({x:x - 1, y:y, cost:this._costMap[y][x - 1]})
+    if (y > 0) result.push({x:x, y:y - 1, cost:this._costMap[y - 1][x]})
+    if (x < MAP_WIDTH - 1) result.push({x:x + 1, y:y, cost:this._costMap[y][x + 1]})
+    if (y < MAP_HEIGHT - 1) result.push({x:x, y:y + 1, cost:this._costMap[y + 1][x]})
     if (x % 2 === 0) {
-      if (x > 0 && y > 0) result.push({x:x - 1, y:y - 1});
-      if (x < MAP_WIDTH - 1 && y > 0) result.push({x:x + 1, y:y - 1});
+      if (x > 0 && y > 0) result.push({x:x - 1, y:y - 1, cost:this._costMap[y - 1][x - 1]})
+      if (x < MAP_WIDTH - 1 && y > 0) result.push({x:x + 1, y:y - 1, cost:this._costMap[y - 1][x + 1]})
     } else {
-      if (x > 0 && y < MAP_HEIGHT - 1) result.push({x:x - 1, y:y + 1});
-      if (x > MAP_WIDTH -1 && y < MAP_HEIGHT -1) result.push({x:x + 1, y:y + 1});
+      if (x > 0 && y < MAP_HEIGHT - 1) result.push({x:x - 1, y:y + 1, cost:this._costMap[y + 1][x - 1]})
+      if (x < MAP_WIDTH - 1 && y < MAP_HEIGHT - 1) result.push({x:x + 1, y:y + 1, cost:this._costMap[x + 1][y + 1]})
     }
     return result;
   }
