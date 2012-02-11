@@ -1,5 +1,6 @@
 enchant.Hex = enchant.Class.create({
   initialize: function(costMap, x, y) {
+    hex = enchant.Hex.instance = this;
     this.gameWidth = x;
     this.gameHeight = y;
     this.movableArea = new Sprite(x, y);

@@ -48,9 +48,10 @@ window.onload = function() {
     var hex = new Hex(moveCostMap, 240, 240);
     var stage = new Group();
 
-    var map = new Map(CHIP_SIZE, CHIP_SIZE);
-    map.image = game.assets['map1.gif'];
+    var map = new exMap(CHIP_SIZE, CHIP_SIZE, mapElement);
+/*  map.image = game.assets['map1.gif'];
     map.loadData(mapElement);
+*/
     stage.addChild(map);
 
     var grid = new Map(CHIP_SIZE, CHIP_SIZE);
@@ -58,15 +59,9 @@ window.onload = function() {
     grid.loadData(gridmap());
     stage.addChild(grid);
 
-    var unit = new Unit(2, 3);
-    unit.image = game.assets['unit.png'];
-    stage.addChild(unit);
-    unit.addEventListener('touchend', function() {
-      hex.drawMovableArea(unit.getPosition(), unit.movePower);
-      stage.addChild(hex.movableArea);
-    });
-
     game.rootScene.addChild(stage);
+
+    var unit = new Unit(2, 3);
   };
   game.start();
 };
@@ -74,10 +69,25 @@ window.onload = function() {
 var Unit = enchant.Class.create(enchant.Sprite, {
   initialize: function(px, py) {
     Sprite.call(this, CHIP_SIZE, CHIP_SIZE);
+    var game = Game.instance;
+    this.image = game.assets['unit.png'];
     this._unitPos = {x:px, y:py}
     this.x = px * CHIP_SIZE;
     this.y = py * CHIP_SIZE + this.calcOffset(); 
-    this.movePower = 4;
+    this.movingPower = 4;
+    game.rootScene.addChild(this);
+    this.addEventListener('touchend', function() {
+      var hex = Hex.instance;
+      hex.drawMovableArea(this._unitPos, this.movingPower);
+      var movableArea = hex.movableArea;
+      game.rootScene.addChild(movableArea);
+      
+      var cancel = new MoveCancelMenu(movableArea);
+    });
+  },
+  remove: function() {
+    game.rootScene.removeChild(this);
+    delete this;
   },
   unitX: {
     get: function() {
@@ -105,3 +115,64 @@ var Unit = enchant.Class.create(enchant.Sprite, {
   }
 });
 
+var exMap = enchant.Class.create(enchant.Map, {
+  initialize: function(width, height, element) {
+    enchant.Map.call(this, width, height);
+    var game = Game.instance;
+    this._image = game.assets['map1.gif'];
+    this.loadData(element);
+  }
+});
+
+var Menu = enchant.Class.create(enchant.Sprite, {
+  initialize: function() {
+    enchant.Sprite.call(this, 240, 240);
+    this._image = new Surface(this.width, this.height);
+    this._bundle = new Group();
+  },
+  _fillRoundRect: function(x, y, width, height, radius, color) {
+    var ctx = this._image.context;
+    ctx.beginPath();
+    ctx.arc(x + radius, y + radius, radius, -Math.PI, -Math.PI / 2, false);
+    ctx.arc(x + width + radius, y + radius, radius, -Math.PI / 2, 0, false);
+    ctx.arc(x + width - radius, y + height - radius, radius, 0, Math.PI / 2, false);
+    ctx.arc(x + radius, y + height - radius, radius, Math.PI / 2, Math.PI, false);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  },
+  _drawMenu: function(x, y, menu, menuHeight) {
+    this._fillRoundRect(x, y, 48, menuHeight, 10, '#ffffff');
+    this._fillRoundRect(x + 2, y + 2, 48 - 2 * 2, menuHeight - 2 * 2, (10 - 2) / 2, '#000000');
+    this._fillRoundRect(x + 6, y + 6, 48 - 4 * 2, menuHeight - 4 * 2, (10 - 4) / 2, '#ffffff');
+    this._bundle.addChild(this._image);
+    for(var i = 0; i < menu.length; i++) {
+      var label = new Label(menu.text);
+      label.x = x + 8;
+      label.y = y + 10 + i * 10;
+      this._bundle.addChild(label);
+    }
+  }
+});
+
+var MoveCancelMenu = enchant.Class.create(Menu, {
+  initialize: function(movableArea) {
+    Menu.call(this);
+    this._game = Game.instance;
+    this.menu = [{text:'キャンセル'}];
+    this._menuHeight = this.menu.lenght * 10;
+    this._drawMenu(90, 120, this.menu, this._menuHeight);
+    this._game.rootScene.addChild(this);
+    this.addEventListener('touchend', function(e) {
+      if (e.pageX > 90 && e.pageX < 148 && e.pageY > 120 && e.pageY < 90 + this._menuHeight + 10) {
+        this._game.rootScene.removeChild(movableArea);
+        this.remove();
+      }
+      
+    });
+  },
+  remove: function() {
+    this._game.rootScene.removeChild(this);
+    delete this;
+  }
+});
