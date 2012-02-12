@@ -124,24 +124,4 @@ var exMap = enchant.Class.create(enchant.Map, {
   }
 });
 
-var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
-  initialize: function(movableArea) {
-    Menu.call(this);
-    this._game = Game.instance;
-    this.menu = [{text:'キャンセル'}];
-    this._menuHeight = this.menu.lenght * 10;
-    this._drawMenu(90, 120, this.menu, this._menuHeight);
-    this._game.rootScene.addChild(this);
-    this.addEventListener('touchend', function(e) {
-      if (e.pageX > 90 && e.pageX < 148 && e.pageY > 120 && e.pageY < 90 + this._menuHeight + 10) {
-        this._game.rootScene.removeChild(movableArea);
-        this.remove();
-      }
-      
-    });
-  },
-  remove: function() {
-    this._game.rootScene.removeChild(this);
-    delete this;
-  }
-});
+

@@ -1,0 +1,68 @@
+enchant();
+var CHIP_SIZE = 16;
+var MAP_WIDTH = 10;
+var MAP_HEIGHT = 10;
+
+window.onload = function() {
+  var game = new Game(240, 240);
+  game.onload = function() {
+    var cancel = new MoveCancelMenu();
+  };
+  game.start();
+};
+
+enchant.Menu = enchant.Class.create(enchant.Sprite, {
+  initialize: function() {
+    enchant.Sprite.call(this, 240, 240);
+    this._image = new Surface(this.width, this.height);
+    this._bundle = new Group();
+  },
+  _fillRoundRect: function(x, y, width, height, radius, color) {
+    var ctx = this._image.context;
+    ctx.beginPath();
+    ctx.arc(x + radius, y + radius, radius, -Math.PI, -Math.PI / 2, false);
+    ctx.arc(x + width + radius, y + radius, radius, -Math.PI / 2, 0, false);
+    ctx.arc(x + width - radius, y + height - radius, radius, 0, Math.PI / 2, false);
+    ctx.arc(x + radius, y + height - radius, radius, Math.PI / 2, Math.PI, false);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  },
+  _drawMenu: function(x, y, menu, menuHeight) {
+    this._fillRoundRect(x, y, 48, menuHeight, 10, '#ffffff');
+    this._fillRoundRect(x + 2, y + 2, 48 - 2 * 2, menuHeight - 2 * 2, (10 - 2) / 2, '#000000');
+    this._fillRoundRect(x + 6, y + 6, 48 - 4 * 2, menuHeight - 4 * 2, (10 - 4) / 2, '#ffffff');
+    this._bundle.addChild(this._image);
+    for(var i = 0; i < menu.length; i++) {
+      var label = new Label(menu.text);
+      label.x = x + 8;
+      label.y = y + 10 + i * 10;
+      this._bundle.addChild(label);
+    }
+  }
+});
+
+var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
+  initialize: function() {
+    enchant.Menu.call(this);
+    this._game = Game.instance;
+    this.menu = [];
+    this.menu.push({text:'キャンセル'});
+    this._menuHeight = this.menu.length * 10;
+    this._drawMenu(90, 120, this.menu, this._menuHeight);
+    this._game.rootScene.addChild(this);
+    this.addEventListener('touchend', function(e) {
+      if (e.pageX > 90 && e.pageX < 148 && e.pageY > 120 && e.pageY < 90 + this._menuHeight + 10) {
+        //this._game.rootScene.removeChild(movableArea);
+        this.remove();
+      }
+      
+    });
+  },
+  remove: function() {
+    this._game.rootScene.removeChild(this);
+    delete this;
+  }
+});
+
+
