@@ -43,7 +43,7 @@ var gridmap = function() {
 window.onload = function() {
   var game = new Game(240, 240);
   game.fps = 15;
-  game.preload('map1.gif', 'unit.png', 'grid.png');
+  game.preload('map1.gif', 'unit.png', 'grid.png','./img/menu.png');
   game.onload = function() {
     var hex = new Hex(moveCostMap, 240, 240);
     var stage = new Group();
@@ -125,19 +125,16 @@ var exMap = enchant.Class.create(enchant.Map, {
 });
 
 var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
-  initialize: function(movableArea) {
-    Menu.call(this);
-    this._game = Game.instance;
-    this.menu = [{text:'キャンセル'}];
-    this._menuHeight = this.menu.lenght * 10;
-    this._drawMenu(90, 120, this.menu, this._menuHeight);
+  initialize: function(movablearea) {
+    var menu = [{text:'cancel', frame:0}];
+    enchant.Menu.call(this, 40, 80, menu);
     this._game.rootScene.addChild(this);
     this.addEventListener('touchend', function(e) {
-      if (e.pageX > 90 && e.pageX < 148 && e.pageY > 120 && e.pageY < 90 + this._menuHeight + 10) {
-        this._game.rootScene.removeChild(movableArea);
+      var area = this._menuArea(menu.text);
+      if(e.x > area[0].x && e.x < area[0].x + this._width && e.y > area[0].y && e.y < area[0].y + 15) {
+        this._game.rootScene.removeChild(movablearea);
         this.remove();
       }
-      
     });
   },
   remove: function() {
