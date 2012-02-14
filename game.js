@@ -43,15 +43,13 @@ var gridmap = function() {
 window.onload = function() {
   var game = new Game(240, 240);
   game.fps = 15;
-  game.preload('map1.gif', 'unit.png', 'grid.png','./img/menu.png');
+  game.preload('map1.gif', './img/unit.gif', 'grid.png','./img/menu.png');
   game.onload = function() {
+    game.rootScene.backgroundColor = '#000000';
     var hex = new Hex(moveCostMap, 240, 240);
     var stage = new Group();
 
     var map = new exMap(CHIP_SIZE, CHIP_SIZE, mapElement);
-/*  map.image = game.assets['map1.gif'];
-    map.loadData(mapElement);
-*/
     stage.addChild(map);
 
     var grid = new Map(CHIP_SIZE, CHIP_SIZE);
@@ -70,7 +68,9 @@ var Unit = enchant.Class.create(enchant.Sprite, {
   initialize: function(px, py) {
     Sprite.call(this, CHIP_SIZE, CHIP_SIZE);
     var game = Game.instance;
-    this.image = game.assets['unit.png'];
+    var image = new Surface(96, 96);
+    image.draw(game.assets['./img/unit.gif'], 0, 0, 96, 96, 0, 0, 16, 16);
+    this.image = image;
     this._unitPos = {x:px, y:py}
     this.x = px * CHIP_SIZE;
     this.y = py * CHIP_SIZE + this.calcOffset(); 
@@ -126,8 +126,8 @@ var exMap = enchant.Class.create(enchant.Map, {
 
 var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
   initialize: function(movablearea) {
-    var menu = [{text:'cancel', frame:0}];
-    enchant.Menu.call(this, 40, 80, menu);
+    var menu = [{text:'キャンセル', frame:0}];
+    enchant.Menu.call(this, 100, 120, menu);
     this._game.rootScene.addChild(this);
     this.addEventListener('touchend', function(e) {
       var area = this._menuArea(menu.text);

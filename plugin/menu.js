@@ -3,8 +3,8 @@ enchant.Menu = enchant.Class.create(enchant.Group,{
     enchant.Group.call(this);
     this._game = Game.instance;
     this._menu = menu;
-    this._height = this._menu.length * 15;
-    this._width = 60;
+    this._height = this._menu.length * 10;
+    this._width = 45;
 
     this._menuBase = new Sprite(this._width + 10, this._height + 10);
     this._menuBase.image = new Surface(this._width + 10, this._height + 10);
@@ -29,14 +29,21 @@ enchant.Menu = enchant.Class.create(enchant.Group,{
     this._fillRoundRect(0, 0, this._width, this._height, 5, '#000000');
     this.addChild(this._menuBase);
     
-    var image = new Surface(this._width, this._height);
-    image.draw(this._game.assets['./img/menu.png'], 0, 0, 60, 150, 0, 0, 60, 150);
+/*  var image = new Surface(this._width, this._height);
+    image.draw(this._game.assets['./img/menu.png'], 0, 0, 45, 100, 0, 0, 45, 100);
+*/    
     for (var i = 0; i < this._menu.length; i++) {
-      var _menuElement = new Sprite(this._width, 15);
+/*    var _menuElement = new Sprite(this._width, 10);
       _menuElement.x = this._menuBase.x + 5;
-      _menuElement.y = this._menuBase.y + 5 + i * 15;
+      _menuElement.y = this._menuBase.y + 5 + i * 10;
       _menuElement.image = image;
       _menuElement.frame = this._menu[i].frame;
+*/
+      var _menuElement = new Label(this._menu[i].text);
+      _menuElement.x = this._menuBase.x + 5;
+      _menuElement.y = this._menuBase.y + 5 + i * 10;
+      _menuElement.color = '#ffffff';
+      _menuElement.font = '8px';
       this.addChild(_menuElement);
     }
   },
@@ -45,7 +52,7 @@ enchant.Menu = enchant.Class.create(enchant.Group,{
     var menuX = this._menuBase.x + 5;
     for (var i = 0; i < this._menu.length; i++) {
       if(this._menu.text == text) {
-        var menuY = this._menuBase.y + 5 + i * 15;
+        var menuY = this._menuBase.y + 5 + i * 10;
         break;
       }
     }
