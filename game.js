@@ -1,7 +1,12 @@
 enchant();
 var CHIP_SIZE = 16;
+var GAME_WIDTH = 240;
+var GAME_HEIGHT = 240
 var MAP_WIDTH = 10;
 var MAP_HEIGHT = 10;
+var MENU_RADIUS = 5;
+var MENU_WIDTH = 45;
+var MENU_HEIGHT = 10;
 
 var mapElement = [
   [322, 322, 322, 322, 322, 205, 205, 205, 205, 205],
@@ -41,12 +46,12 @@ var gridmap = function() {
 };
 
 window.onload = function() {
-  var game = new Game(240, 240);
+  var game = new Game(GAME_WIDTH, GAME_HEIGHT);
   game.fps = 15;
   game.preload('map1.gif', './img/unit.gif', 'grid.png','./img/menu.png');
   game.onload = function() {
     game.rootScene.backgroundColor = '#000000';
-    var hex = new Hex(moveCostMap, 240, 240);
+    var hex = new Hex(moveCostMap, GAME_WIDTH, GAME_HEIGHT);
     var stage = new Group();
 
     var map = new exMap(CHIP_SIZE, CHIP_SIZE, mapElement);
@@ -130,10 +135,54 @@ var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
     enchant.Menu.call(this, 100, 120, menu);
     this._game.rootScene.addChild(this);
     this.addEventListener('touchend', function(e) {
-      var area = this._menuArea(menu.text);
-      if(e.x > area[0].x && e.x < area[0].x + this._width && e.y > area[0].y && e.y < area[0].y + 15) {
+      var area = this._menuArea(menu[0].text);
+      if(e.x > area[0].x && e.x < area[0].x + MENU_WIDTH && e.y > area[0].y && e.y < area[0].y + MENU_HEIGHT) {
         this._game.rootScene.removeChild(movablearea);
         this.remove();
+      }
+    });
+  },
+  remove: function() {
+    this._game.rootScene.removeChild(this);
+    delete this;
+  }
+});
+
+var UnitMenu = enchant.Class.create(enchant.Menu, {
+  initialize: function(unitPos) {
+    var menu = [
+      {text:'移動', frame:1},
+      {text:'攻撃', frame:2},
+      {text:'待機', frame:3}
+    ];
+    var cornerX = unitPos.x + CHIP_SIZE * 1.5 + MENU_RADIUS * 2 + MENU_WIDTH;
+    var cornerY = unitPos.y + MENU_RADIUS * 2 + menu.length * MENU_HEIGHT;
+    var menuX = function() {
+      if (cornerX < GAME_WIDTH) {
+        return unitPos.x + CHIP_SIZE * 1.5;
+      } else {
+        return unitPos.x - CHIP_SIZE * 0.5 - MENU_RADIUS * 2 - MENU_WIDTH;
+      }
+    };
+
+    var menuY = function() {
+      if (cornerY < GAME_HEIGHT) {
+        return unitPos.y;
+      } else {
+        return unitPos.y - MENU_RADIUS * 2 - menu.length * MENU_HEIGHT + CHIP_SIZE;
+      }
+    };
+
+    enchant.Menu.call(this, menuX, menuY, menu);
+    this._game.rootScene.addChild(this);
+    this.addEventListener('touchend', function(e){
+      if(e.x > this._menuBase.x + MENU_RADIUS && e.x < this._menuBase.x + MENU_RADIUS + MENU_WIDTH && e.y > this._menuBase.y + MENU_RADIUS && e.y < this._menuBase.y + MENU_RADIUS + this._height) {
+        for(var i = 0; i < this._menu.length; i++) {
+          if(e.y > MENU_HEIGHT * i && e.y < MENU_HEIGHT * (i + 1)) {
+            // 配列の中身に命令文を仕込みか？
+            this._menu.command
+          }
+        }
       }
     });
   },
