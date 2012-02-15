@@ -5,8 +5,8 @@ var GAME_HEIGHT = 240
 var MAP_WIDTH = 10;
 var MAP_HEIGHT = 10;
 var MENU_RADIUS = 5;
-var MENU_WIDTH = 45;
-var MENU_HEIGHT = 10;
+var MENU_WIDTH = 35;
+var MENU_HEIGHT = 8;
 
 var mapElement = [
   [322, 322, 322, 322, 322, 205, 205, 205, 205, 205],
@@ -131,11 +131,11 @@ var exMap = enchant.Class.create(enchant.Map, {
 
 var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
   initialize: function(movablearea) {
-    var menu = [{text:'キャンセル', frame:0}];
+    var menu = [{text:'キャンセル', frame:1}];
     enchant.Menu.call(this, 100, 120, menu);
     this._game.rootScene.addChild(this);
     this.addEventListener('touchend', function(e) {
-      var area = this._menuArea(menu[0].text);
+      var area = this._menuArea(menu.text);
       if(e.x > area[0].x && e.x < area[0].x + MENU_WIDTH && e.y > area[0].y && e.y < area[0].y + MENU_HEIGHT) {
         this._game.rootScene.removeChild(movablearea);
         this.remove();
