@@ -78,7 +78,7 @@ var Unit = enchant.Class.create(enchant.Sprite, {
     this.image = image;
     this._unitPos = {x:px, y:py}
     this.x = px * CHIP_SIZE;
-    this.y = py * CHIP_SIZE + this.calcOffset(); 
+    this.y = py * CHIP_SIZE + this.calcOffset();
     this.movingPower = 4;
     game.rootScene.addChild(this);
     this.addEventListener('touchend', function() {
@@ -86,7 +86,7 @@ var Unit = enchant.Class.create(enchant.Sprite, {
       hex.drawMovableArea(this._unitPos, this.movingPower);
       var movableArea = hex.movableArea;
       game.rootScene.addChild(movableArea);
-      
+
       var cancel = new MoveCancelMenu(movableArea);
     });
   },
@@ -179,7 +179,7 @@ var UnitMenu = enchant.Class.create(enchant.Menu, {
       if(e.x > this._menuBase.x + MENU_RADIUS && e.x < this._menuBase.x + MENU_RADIUS + MENU_WIDTH && e.y > this._menuBase.y + MENU_RADIUS && e.y < this._menuBase.y + MENU_RADIUS + this._height) {
         for(var i = 0; i < this._menu.length; i++) {
           if(e.y > MENU_HEIGHT * i && e.y < MENU_HEIGHT * (i + 1)) {
-            // 配列の中身に命令文を仕込みか？
+            // 配列の中身に命令文を仕込むか？
             this._menu.command
           }
         }
