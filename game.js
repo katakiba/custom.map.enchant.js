@@ -131,7 +131,7 @@ var exMap = enchant.Class.create(enchant.Map, {
 
 var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
   initialize: function(movablearea) {
-    var menu = [{text:'キャンセル', frame:1}];
+    var menu = [{text:'キャンセル', frame:0, command:0}];
     enchant.Menu.call(this, 100, 120, menu);
     this._game.rootScene.addChild(this);
     this.addEventListener('touchend', function(e) {
@@ -151,9 +151,9 @@ var MoveCancelMenu = enchant.Class.create(enchant.Menu, {
 var UnitMenu = enchant.Class.create(enchant.Menu, {
   initialize: function(unitPos) {
     var menu = [
-      {text:'移動', frame:1},
-      {text:'攻撃', frame:2},
-      {text:'待機', frame:3}
+      {text:'移動', frame:1, command:1},
+      {text:'攻撃', frame:2, command:2},
+      {text:'待機', frame:3, command:3}
     ];
     var cornerX = unitPos.x + CHIP_SIZE * 1.5 + MENU_RADIUS * 2 + MENU_WIDTH;
     var cornerY = unitPos.y + MENU_RADIUS * 2 + menu.length * MENU_HEIGHT;
@@ -179,8 +179,19 @@ var UnitMenu = enchant.Class.create(enchant.Menu, {
       if(e.x > this._menuBase.x + MENU_RADIUS && e.x < this._menuBase.x + MENU_RADIUS + MENU_WIDTH && e.y > this._menuBase.y + MENU_RADIUS && e.y < this._menuBase.y + MENU_RADIUS + this._height) {
         for(var i = 0; i < this._menu.length; i++) {
           if(e.y > MENU_HEIGHT * i && e.y < MENU_HEIGHT * (i + 1)) {
-            // 配列の中身に命令文を仕込むか？
-            this._menu.command
+						switch (this._menu[i].command) {
+							case 1:
+								move();
+								break;
+							case 2:
+								attack();
+								break;
+							case 3:
+								wait();
+								break;
+							default:
+								break;
+						}
           }
         }
       }
